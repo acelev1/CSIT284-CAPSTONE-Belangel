@@ -3,6 +3,7 @@ import '../models/dummy_events.dart';
 import '../models/event.dart';
 import 'event_detail_screen.dart';
 import 'events_screen.dart';
+import 'my_events_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<Event> _events = dummyEvents;
+  int _currentIndex = 0;
 
   void _toggleRsvp(Event event) {
     setState(() {
@@ -34,14 +36,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('School Events')),
-      body: EventsScreen(
-        events: _events,
-        onToggleRsvp: _toggleRsvp,
-        onOpenEvent: _openEvent,
-      ),
-    );
-  }
+Widget build(BuildContext context) {
+  final screens = [
+    EventsScreen(
+      events: _events,
+      onToggleRsvp: _toggleRsvp,
+      onOpenEvent: _openEvent,
+    ),
+    MyEventsScreen(
+      events: _events,
+      onToggleRsvp: _toggleRsvp,
+      onOpenEvent: _openEvent,
+    ),
+  ];
+
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(_currentIndex == 0 ? 'School Events' : 'My Events'),
+    ),
+    body: screens[_currentIndex],
+    bottomNavigationBar: NavigationBar(
+      selectedIndex: _currentIndex,
+      onDestinationSelected: (i) => setState(() => _currentIndex = i),
+      destinations: const [
+        NavigationDestination(icon: Icon(Icons.event), label: 'Events'),
+        NavigationDestination(icon: Icon(Icons.bookmark), label: 'My Events'),
+      ],
+    ),
+  );
+}
 }
